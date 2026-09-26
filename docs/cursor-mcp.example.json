@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "iac-guard-mcp": {
+      "command": "python",
+      "args": ["-m", "iac_guard.mcp_server"],
+      "cwd": "/absolute/path/to/iac-guard-mcp"
+    }
+  }
+}
