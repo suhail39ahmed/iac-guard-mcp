@@ -3,6 +3,7 @@
 ![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![Status](https://img.shields.io/badge/status-0.1.0%20MVP-green.svg)
+[![demo](https://img.shields.io/badge/demo-make%20demo-brightgreen.svg)](docs/ci/demo.yml)
 
 **IaC `review_diff` for agents: Checkov (optional) or builtin regex policies over Terraform/Bicep — structured findings JSON.**
 
@@ -85,4 +86,4 @@ Without the SDK, list tool schemas via CLI (`tools` subcommand where available) 
 
 ## License
 
-Apache-2.0
+Apache-2.0 (SPDX). Full text in LICENSE.

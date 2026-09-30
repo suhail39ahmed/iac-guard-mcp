@@ -1,32 +1,38 @@
 # Demo — iac-guard-mcp
 
-Loom / screen recording script (**60–90 seconds**). Speak calmly; show the terminal, not slides.
+Honest fixture demos. Apache-2.0. No fabricated metrics.
 
-## Setup (before record)
+## Timed Loom (60–90s)
+
+| Time | On screen | Say |
+|------|-----------|-----|
+| 0:00–0:10 | Repo root | "iac-guard-mcp — review_diff for agents over Terraform and Bicep. Builtin policies; Checkov optional." |
+| 0:10–0:40 | `python -m iac_guard fixtures/bad_nsg.tf` | "Bad NSG fixture — structured findings JSON agents can consume." |
+| 0:40–1:05 | Bicep fixture | "Same tool surface for Bicep. Offline fixtures." |
+| 1:05–1:30 | Outro | "`make demo`. Not a full OPA platform — a review_diff pattern." |
+
+### Exact commands
 
 ```bash
 cd iac-guard-mcp
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
-# clear scrollback; font size ~16–18pt; dark theme
+python -m iac_guard --help
+python -m iac_guard fixtures/bad_nsg.tf || true
+python -m iac_guard fixtures/bad_nsg.bicep || true
+make demo
 ```
 
-## Exact click / type script
-
-1. Open terminal at repo root. Say: *"This is iac-guard-mcp — IaC `review_diff` for agents: Checkov (optional) or builtin regex policies over …"*
-2. Type `make demo` **or** walk the commands below one by one.
-1. Run `python -m iac_guard --help` — wait for JSON / output.
-2. Run `python -m iac_guard fixtures/bad_nsg.tf || true` — wait for JSON / output.
-3. Run `python -m iac_guard fixtures/bad_nsg.bicep || true` — wait for JSON / output.
-3. Scroll the JSON briefly. Call out one concrete field (citation path, `human_approval_required`, findings, report path, etc.).
-4. Close with: *"Offline fixtures only — clone it, `make demo`, adopt the pattern."* Link the GitHub repo in the Loom description.
-
-## Talking points (pick 2)
-
-- Who it's for: Cloud security + platform SAs embedding IaC review into agent workflows.
-- What it is NOT: Not a full OPA / Gatekeeper platform
-- Honest MVP: no fabricated production metrics
-
-## Outro card (last 3s)
+### Outro card
 
 `github.com/suhail39ahmed/iac-guard-mcp`
+
+## Shot list
+
+1. Terraform findings JSON  
+2. Bicep findings  
+3. `make demo` success line  
+
+## CI workflow (install once)
+
+YAML template: [`docs/ci/demo.yml`](./ci/demo.yml) — copy to `.github/workflows/demo.yml` when your token has the `workflow` scope.
