@@ -1,5 +1,7 @@
 # iac-guard-mcp
 
+![IaC Guard MCP: infrastructure diff review that agents can cite](docs/cover.jpg)
+
 ![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![Status](https://img.shields.io/badge/status-0.1.0%20MVP-green.svg)
@@ -46,9 +48,53 @@ make demo
 - Not an auto-remediator that runs terraform apply
 - Not a substitute for org policy + Defender for Cloud
 
-## Architecture
+## Design & Engineering
+
+I designed this so an agent reviewing infrastructure code can point at a specific policy finding instead of saying "looks fine".
+
+**Design goals**
+
+- Review Terraform and Bicep for classic Azure foot-guns (SSH open to the internet, public blob access).
+- Return structured findings JSON plus a plain explanation that agents can cite.
+- Work with no extra tools installed, and get better when Checkov is available.
+- Expose the same review as an MCP tool for Cursor or any MCP host.
+
+**Architecture**
 
 ![Architecture](assets/architecture.svg)
+
+```mermaid
+flowchart LR
+    F[.tf / .bicep file] --> D{Checkov installed<br/>and preferred?}
+    D -- yes --> C[checkov_runner.py<br/>Checkov JSON -> findings]
+    D -- no / fails --> B[policies.py<br/>builtin regex policies]
+    C --> O[findings JSON<br/>policy_id, severity, description, source]
+    B --> O
+    O --> CLI[CLI: python -m iac_guard]
+    O --> MCP[MCP tool: review_diff<br/>mcp_server.py, stdio]
+```
+
+**Key design decisions and trade-offs**
+
+| Decision | Why | Trade-off |
+|---|---|---|
+| Builtin regex policies as the floor | Zero dependencies; always returns something useful | Regex can't follow modules or variables like a real parser |
+| Checkov optional, with fallback | Full rule coverage when installed; a timeout or missing binary never breaks the review | Two code paths to keep consistent |
+| Same findings schema for CLI and MCP | One contract for humans, CI and agents | The schema has to stay stable |
+| Review only, never `terraform apply` | Safe to give to an agent | Fixes are still a human step |
+
+**Engineering details**
+
+- **Stack:** Python 3.10+, optional `mcp` SDK extra (`pip install -e ".[mcp]"`), optional Checkov.
+- **Builtin policies:** `NSG-SSH-OPEN` (port 22 from `*`) and `STORAGE-PUBLIC-BLOB`, for both Terraform and Bicep syntax.
+- **Fixtures:** `fixtures/bad_nsg.tf` and `fixtures/bad_nsg.bicep`.
+- **CI:** `make demo` checks findings are produced for both fixtures; workflow template in [`docs/ci/demo.yml`](docs/ci/demo.yml).
+
+**What I'd do next**
+
+- More builtin Azure policies (private endpoints, TLS versions).
+- A PR comment formatter.
+- A multi-file diff MCP tool, so it can review a whole PR at once.
 
 ## Roadmap
 
